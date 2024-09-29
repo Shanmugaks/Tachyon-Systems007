@@ -4,13 +4,16 @@ import ToolTip from "./ToolTip";
 import { Edge, GraphData, NodeData } from "./types/type";
 import { Node } from "./Node";
 import { CustomArrow } from "./CustomArrow";
+import { CurvedArrow } from "./CurvedArrow";
+import { CurvedNonOverlappingArrow } from "./CurvedNonOverlappingArrow";
+import { Position } from "./types/type";
 
  
 const FlexibleGraph: React.FC<{ data: GraphData }> = ({ data }) => {
   const [nodes, setNodes] = useState<NodeData[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
-  console.log(edges.length);
+  //console.log(edges.length);
   useEffect(() => {
     // Process the nodes and edges from the graph data
     const processedNodes: NodeData[] = [];
@@ -102,9 +105,15 @@ const FlexibleGraph: React.FC<{ data: GraphData }> = ({ data }) => {
   const handleNodeClick = (node: NodeData) => {
     setSelectedNode(node.id === selectedNode?.id ? null : node);
   };
+
+  const checkOverlapping = (start: Position, end: Position): boolean => {
+
+    return false;
+  };
+
   const getDynamicMarginTop = (edges: any) => {
     const nodeCount = edges.length;
-    console.log(nodeCount);
+    //console.log(nodeCount);
     if (nodeCount >= 20) return "-mt-48";
     if (nodeCount > 10) return "-mt-16";
     if (nodeCount > 3) return " mt-14  ";
@@ -137,13 +146,23 @@ const FlexibleGraph: React.FC<{ data: GraphData }> = ({ data }) => {
             onClick={handleNodeClick}
           />
         ))}
-        {edges.map((edge, index) => (
-          <CustomArrow
-            key={`edge-${index}`}
-            start={edge.source.position!}
-            end={edge.target.position!}
-          />
-        ))}
+       {edges.map((edge, index) => {
+          const isOverlappingNodes = checkOverlapping(edge.source.position!, edge.target.position!);
+          return isOverlappingNodes ? (
+            <CurvedNonOverlappingArrow
+              key={`edge-${index}`}
+              start={edge.source.position!}
+              end={edge.target.position!}
+              nodes={nodes.map(node => node.position)}
+            />
+          ) : (
+            <CustomArrow
+              key={`edge-${index}`}
+              start={edge.source.position!}
+              end={edge.target.position!}
+            />
+          );
+        })}
         {selectedNode && selectedNode.position && (
           <div
             style={{

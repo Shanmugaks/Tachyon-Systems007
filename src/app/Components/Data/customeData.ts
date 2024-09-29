@@ -661,7 +661,7 @@ export const customeData3 = [
         prev: "9",
         id: "202",
         nodeType: "Circle",
-        next: "8",
+        next: "2",
       },
     ],
   },
